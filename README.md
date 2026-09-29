@@ -35,63 +35,17 @@ This system was built to satisfy all requirements of the AI Intern Assessment. I
 
 The system is built on **LangGraph**, using a stateful `StateGraph` where each node represents an isolated, deterministic processing step and edges dictate execution flow with conditional error routing.
 
-```
-                           DIGEST PIPELINE
-                           
-    [Start]
-       │
-       ▼
-┌───────────────────────┐
-│  query_understanding  │ ──► Classifies query: "topic" vs "paper"
-└───────────────────────┘
-       │
-       ▼
-┌───────────────────────┐         [Error]
-│    arxiv_retrieval    │ ───────────────────────┐
-└───────────────────────┘                        │
-       │                                         │
-       ▼                                         │
-┌───────────────────────┐         [Error]        │
-│       pdf_fetch       │ ───────────────────────┤
-└───────────────────────┘                        │
-       │                                         │
-       ▼                                         │
-┌───────────────────────┐         [Error]        │
-│       pdf_parse       │ ───────────────────────┤
-└───────────────────────┘                        │
-       │                                         │
-       ▼                                         │
-┌───────────────────────┐         [Error]        ▼
-│    chunk_and_index    │ ────────────────► ┌───────────────┐
-└───────────────────────┘                   │ error_handler │ ──► [END]
-       │                                    └───────────────┘
-       ▼                                         ▲
-┌───────────────────────┐         [Error]        │
-│       summarize       │ ───────────────────────┘
-└───────────────────────┘
-       │
-       ▼
-     [END]
-```
+### Paper Digest Workflow Graph (`src/graph/workflow.py`)
 
-```
-                          GROUNDED QA PIPELINE
-                          
-    [User Question]
-           │
-           ▼
-┌───────────────────────┐         [Error]   ┌───────────────┐
-│     qa_retrieval      │ ────────────────► │ error_handler │ ──► [END]
-└───────────────────────┘                   └───────────────┘
-           │                                         ▲
-           ▼                               [Error]   │
-┌───────────────────────┐                            │
-│       qa_answer       │ ───────────────────────────┘
-└───────────────────────┘
-           │
-           ▼
-         [END]
-```
+<p align="center">
+  <img src="assets/digest_graph.png" alt="Paper Digest Workflow Graph" width="420" />
+</p>
+
+### Grounded QA Workflow Graph (`src/graph/workflow.py`)
+
+<p align="center">
+  <img src="assets/qa_graph.png" alt="Grounded QA Workflow Graph" width="300" />
+</p>
 
 ### State Machine Architecture & Separation of Concerns
 
