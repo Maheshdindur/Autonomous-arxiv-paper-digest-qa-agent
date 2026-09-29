@@ -6,7 +6,7 @@
 [![ChromaDB](https://img.shields.io/badge/vector--store-Chroma-red.svg)](https://www.trychroma.com/)
 [![Tests](https://img.shields.io/badge/tests-84%20passed-green.svg)](tests/)
 
-An autonomous, production-grade AI research assistant engineered for the **Autonomous arXiv Paper Digest & QA Agent** assessment. The agent autonomously queries arXiv, parses multi-page academic PDFs with layout awareness, indexes chunks into a local persistent vector store, produces structured 11-field executive briefings, and delivers strictly grounded question answering (RAG) with source provenance citations and verified anti-hallucination guardrails.
+An autonomous, AI research assistant engineered for the **Autonomous arXiv Paper Digest & QA Agent** assessment. The agent autonomously queries arXiv, parses multi-page academic PDFs with layout awareness, indexes chunks into a local persistent vector store, produces structured 11-field executive briefings, and delivers strictly grounded question answering (RAG) with source provenance citations and verified anti-hallucination guardrails.
 
 ---
 
