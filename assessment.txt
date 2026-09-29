@@ -1,0 +1,146 @@
+Autonomous arXiv Paper Digest & QA Agent
+1. Background & Goal
+Researchers and engineers spend a lot of time skimming arXiv papers to decide what's worth a deep read.
+Your task is to build an agent that takes a topic or a specific arXiv paper ID, fetches the paper(s), reads
+them, and produces a structured executive briefing — plus lets a user ask follow-up questions about the
+paper's content.
+This assessment evaluates how you think about agent/state design, retrieval, and pragmatic
+engineering under ambiguity — not whether you can memorize a framework's API. There is no single
+"correct" architecture. We care about your reasoning, tradeoffs, and code quality more than the choice of
+any specific library.
+
+2. What the Agent Should Do
+Input
+One of:
+A natural-language research topic (e.g., "recent work on KV-cache compression for LLMs")
+A specific arXiv ID or URL (e.g., 2401.12345 or https://arxiv.org/abs/2401.12345 )
+
+Core Pipeline (Agentic State Graph)
+Design this as an explicit stateful graph (nodes + edges + shared state), not a single monolithic prompt.
+Suggested stages — feel free to adjust, merge, or add nodes as long as the flow is coherent and justified:
+1. Query Understanding — parse intent: topic search vs. specific paper lookup.
+2. arXiv Retrieval — call the arXiv API to find candidate paper(s) (metadata: title, authors, abstract, PDF
+link, categories, date).
+3. Selection/Ranking (if topic search) — pick the most relevant paper(s) from results.
+4. Fetch & Parse — download the PDF and extract text (sections, abstract, references at minimum).
+5. Chunk & Embed — chunk the parsed text and store embeddings in a vector DB for later QA.
+6. Summarize — generate a structured executive briefing.
+7. QA Loop — accept follow-up questions from the user, retrieve relevant chunks from the vector DB, and
+answer with grounding in the paper (i.e., basic RAG).
+The graph should have identifiable state that persists across nodes (e.g., paper metadata, parsed text,
+chunk store reference, conversation history for QA) and should handle at least one realistic failure case
+gracefully (see §5).
+
+Output: Executive Briefing
+A structured artifact (JSON or Markdown) containing, at minimum:
+Title, authors, arXiv ID, publish date, link
+1-paragraph plain-English summary ("why this paper matters")
+Problem statement
+Method/approach (bullet points)
+Key results / claims
+Limitations (explicit — don't let the model skip this)
+Suggested follow-up questions a reader might ask
+
+QA Mode
+After the briefing is generated, the user can ask free-form questions about the paper. Answers must be
+grounded in retrieved chunks (RAG). If the answer isn't in the paper, the agent should say so rather than
+hallucinate.
+
+3. Deliverables
+1. Working code in a public GitHub repo (or zip), with clear setup instructions.
+2. README including:
+Architecture diagram or description of your state graph (nodes, edges, state shape)
+Setup & run instructions (must run locally with free/open-source tools or any platform of your
+choice(any support is not given by us regarding this)))
+Example run (input → briefing output → 2–3 sample QA exchanges), pasted or as a screen
+recording/gif
+A short "Design Decisions & Tradeoffs" section (½–1 page): what you chose, what you'd do
+differently with more time, known limitations
+3. A short Video reflection (4 MIn)- we stop seeing your video after 4 min : on the approach you have
+taken to complete this assement.
+
+4. Constraints
+All tools/libraries can be any open-source or free-tier usable or any usable paid ones you already
+have. Examples (not mandatory — pick your own stack):
+Orchestration: LangGraph, LlamaIndex Workflows, custom Python state machine, Haystack,
+CrewAI, etc.
+LLM: any free-tier API (e.g., Groq, Google AI Studio/Gemini free tier, OpenRouter free models) or a
+local open-weight model (Ollama + Llama/Mistral/Qwen, etc.)
+
+Vector DB: you can use a local vector DB — no need for a cloud-hosted vector DB. Examples:
+Chroma, FAISS, Qdrant (local mode), LanceDB, Weaviate (embedded), etc.
+PDF parsing: PyMuPDF, pdfplumber, arxiv Python package, unstructured.io (OSS mode), etc.
+arXiv access: the official arXiv API (Atom feed) — no scraping required
+No paid API keys should be required to run your submission. If you use a hosted LLM, use a free tier
+and document any rate limits we should be aware of when testing.
+Feel happy to use any AI assistance that you already have, but be mindful of the code you are
+submitting- we would ask you clarification on certain decison that you made while building the project.
+Language: Python preferred.
+
+5. Things We Want You to Think About (not all required — use
+judgement)
+What happens when arXiv returns zero or many candidate papers for a vague topic?
+What happens if the PDF fails to parse cleanly (scanned images, broken layout, huge paper)?
+How do you keep the QA loop's answers grounded rather than hallucinated?
+How does state get passed/persisted between the summarization stage and the QA stage — is it inmemory, a session object, a DB?
+
+6. Evaluation Rubric
+Area
+
+What we're looking for
+
+Weig
+ht
+
+Agent/graph design
+
+Clear, justified state graph; not just a single prompt chain
+
+25%
+
+Correctness &
+
+Briefing is accurate; QA answers are grounded in retrieved content,
+
+25%
+
+grounding
+
+not hallucinated
+
+Retrieval & parsing
+
+Sensible chunking strategy, working vector search, reasonable arXiv
+
+quality
+
+query handling
+
+Code quality
+
+Readable, modular, reasonable error handling
+
+15%
+
+Communication
+
+README clarity, design tradeoffs section, reflection
+
+15%
+
+We are explicitly not grading on UI polish. A CLI or simple script-based interaction is completely fine.
+
+20%
+
+7. Out of Scope (don't build these)
+A frontend/UI beyond a basic CLI or notebook interface
+Multi-user auth, deployment, or production infra
+Support for non-arXiv sources
+Fine-tuning any models
+
+8. Submission
+Link to your github repo or zip file + README
+Time-box yourself to roughly 2 - 3 days; we'd rather see a smaller, well-reasoned system than a
+sprawling half-working one. If you run out of time, tell us in the README what you'd have done next.
+
+
